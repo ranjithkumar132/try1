@@ -1,0 +1,209 @@
+
+0
+"000100 CHECK-SQLCODE-PARA.                                            …"
+1
+"000200       EVALUATE TRUE                                            …"
+2
+"000300         WHEN SQLCODE = 0                                       …"
+3
+"000400           CONTINUE                                             …"
+4
+"000410         WHEN SQLCODE = 100  AND EL-SQLCODE-IGNORE-100          …"
+5
+"000411         WHEN SQLCODE = -803 AND EL-SQLCODE-IGNORE-803          …"
+6
+"000412         WHEN SQLCODE = -811 AND EL-SQLCODE-IGNORE-811          …"
+7
+"000413         WHEN SQLCODE = -181 AND EL-SQLCODE-IGNORE-181          …"
+8
+"000420           SET EL-SQLCODE-IGNORE-NONE  TO TRUE                  …"
+9
+"000900         WHEN OTHER                                             …"
+10
+"001000           SET EL-ERROR-DB2            TO TRUE                  …"
+11
+"001100           SET EL-ERROR-DESC-DB2       TO TRUE                  …"
+12
+"001200           MOVE SQLCODE                TO EL-ERROR-SQLCODE      …"
+13
+"001300           MOVE SQLERRMC               TO EL-ERROR-SQLERRMC     …"
+14
+"001400           PERFORM LOG-ERROR                                    …"
+15
+"001500       END-EVALUATE.                                            …"
+16
+"001600                                                                …"
+17
+"001700 CHECK-RESPCODE-PARA.                                           …"
+18
+"001800     IF EIBRESP NOT = DFHRESP(NORMAL)                           …"
+19
+"001900      SET EL-ERROR-CICS                  TO TRUE                …"
+20
+"002000      SET EL-ERROR-DESC-CICS             TO TRUE                …"
+21
+"002100      MOVE EIBRESP                       TO EL-ERROR-RESP       …"
+22
+"002200      MOVE EIBRESP2                      TO EL-ERROR-RESP2      …"
+23
+"002300      MOVE EIBRSRCE                      TO EL-ERROR-SRCE       …"
+24
+"002400      CALL  EL-CICS-FN-TO-HEX                                   …"
+25
+"002500      USING EIBFN, EL-ERROR-FUNCTION                            …"
+26
+"002600      END-CALL                                                  …"
+27
+"002700      PERFORM LOG-ERROR                                         …"
+28
+"002800     END-IF.                                                    …"
+29
+"002900                                                                …"
+30
+"003000 LOG-MISC-PARA.                                                 …"
+31
+"003101     SET EL-ERROR-MISC                   TO TRUE                …"
+32
+"003120     SET EL-ERROR-DESC-MISC              TO TRUE                …"
+33
+"003200     PERFORM LOG-ERROR.                                         …"
+34
+"003300                                                                …"
+35
+"003310 LOG-APPL-PARA.                                                 …"
+36
+"003320     SET EL-ERROR-APPL                   TO TRUE                …"
+37
+"003322     SET EL-ERROR-DESC-APPL              TO TRUE                …"
+38
+"003330     PERFORM LOG-ERROR.                                         …"
+39
+"003340                                                                …"
+40
+"003400 LOG-ERROR.                                                     …"
+41
+"003500       EXEC CICS ASSIGN                                         …"
+42
+"003600            USERID    (EL-ERROR-USERID)                         …"
+43
+"003700            NOHANDLE                                            …"
+44
+"003800       END-EXEC.                                                …"
+45
+"003810                                                                …"
+46
+"004000       EXEC CICS ASKTIME                                        …"
+47
+"004100            ABSTIME (EL-ERROR-ABSTIME)                          …"
+48
+"004200            NOHANDLE                                            …"
+49
+"004300       END-EXEC.                                                …"
+50
+"004400                                                                …"
+51
+"004500       EXEC CICS FORMATTIME                                     …"
+52
+"004600            ABSTIME (EL-ERROR-ABSTIME)                          …"
+53
+"004700            MMDDYY  (EL-ERROR-DATE)                             …"
+54
+"004800            TIME    (EL-ERROR-TIME)                             …"
+55
+"004900            DATESEP ('/')                                       …"
+56
+"005000            TIMESEP (':')                                       …"
+57
+"005100            NOHANDLE                                            …"
+58
+"005200       END-EXEC.                                                …"
+59
+"005300                                                                …"
+60
+"005400       MOVE EL-ERROR-DATE-MM            TO EL-ERROR-NUMBER-MM.  …"
+61
+"005500       MOVE EL-ERROR-DATE-DD            TO EL-ERROR-NUMBER-DD.  …"
+62
+"005600       MOVE EL-ERROR-TIME-HH            TO EL-ERROR-NUMBER-HH.  …"
+63
+"005700       MOVE EL-ERROR-TIME-MM            TO EL-ERROR-NUMBER-MN.  …"
+64
+"005800       MOVE EL-ERROR-TIME-SS            TO EL-ERROR-NUMBER-SS.  …"
+65
+"005900                                                                …"
+66
+"005910       MOVE EL-ERROR-NUMBER-TEXT        TO DCI-ERROR-NUMBER-TEXT…"
+67
+"006000       MOVE EL-ERROR-HEADER             TO EL-ERROR-LINE.       …"
+68
+"006100       PERFORM WRITE-TO-LOG.                                    …"
+69
+"006200       SET EL-ERROR-DESC-BLANK        TO TRUE.                  …"
+70
+"006300                                                                …"
+71
+"006400       IF EL-ERROR-DB2                                          …"
+72
+"006500         MOVE SPACES                   TO EL-ERROR-LINE         …"
+73
+"006600         MOVE EL-ERROR-DB2-HEADER      TO EL-ERROR-LINE         …"
+74
+"006700         PERFORM WRITE-TO-LOG                                   …"
+75
+"006800                                                                …"
+76
+"006900         MOVE SPACES                   TO EL-ERROR-LINE         …"
+77
+"007000         MOVE EL-ERROR-DB2-SQLERRMC    TO EL-ERROR-LINE         …"
+78
+"007100         PERFORM WRITE-TO-LOG                                   …"
+79
+"007200       END-IF.                                                  …"
+80
+"007300                                                                …"
+81
+"007400       IF EL-ERROR-CICS                                         …"
+82
+"007500         MOVE SPACES                   TO EL-ERROR-LINE         …"
+83
+"007600         MOVE EL-ERROR-CICS-HEADER     TO EL-ERROR-LINE         …"
+84
+"007700         PERFORM WRITE-TO-LOG                                   …"
+85
+"007800       END-IF.                                                  …"
+86
+"007900                                                                …"
+87
+"008000                                                                …"
+88
+"008100       IF EL-ERROR-TEXT NOT = SPACES                            …"
+89
+"008200          MOVE SPACES                  TO EL-ERROR-LINE         …"
+90
+"008300          MOVE EL-ERROR-TEXT           TO EL-ERROR-LINE         …"
+91
+"008400          PERFORM WRITE-TO-LOG                                  …"
+92
+"008500       END-IF.                                                  …"
+93
+"008600                                                                …"
+94
+"008700 WRITE-TO-LOG.                                                  …"
+95
+"008800****************************************************************…"
+96
+"008900* WRITE TO ddname LOG within CICS.                            * …"
+97
+"009000****************************************************************…"
+98
+"009100       EXEC CICS WRITEQ TD                                      …"
+99
+"009200            QUEUE          ('CSSL')                             …"
+100
+"009300            FROM           (EL-ERROR-LINE)                      …"
+101
+"009400            LENGTH         (LENGTH OF EL-ERROR-LINE)            …"
+102
+"009500            NOHANDLE                                            …"
+103
+"009600       END-EXEC.                                                …"
